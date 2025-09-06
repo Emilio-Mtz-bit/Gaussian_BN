@@ -4,12 +4,8 @@
 .RData
 .Ruserdata
 
-# Exclude non-script files but keep data
-*.html
-*.Rproj
-README.md
-prompt.txt
-"Investigacion relaciones"
-
-# Keep scripts/ and data/ directories but exclude QMD files outside scripts/
-/*.qmd
+# Exclude everything except data/ and scripts/ directories
+/*
+!/data/
+!/scripts/
+!.gitignore
