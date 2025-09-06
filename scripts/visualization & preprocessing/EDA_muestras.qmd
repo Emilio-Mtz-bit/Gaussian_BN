@@ -1,0 +1,18 @@
+---
+title: "EDA_muestras"
+format: html
+editor: visual
+---
+
+```{python}
+import pandas as pd
+```
+
+```{python}
+data = pd.read_csv('../../data/ensanut2022_muestras.csv', sep= ';')
+```
+
+
+```{python}
+data.head()
+```
