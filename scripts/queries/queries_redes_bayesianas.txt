@@ -1,42 +1,85 @@
-QUERIES PROPUESTAS PARA LAS REDES BAYESIANAS GAUSSIANAS
+QUERIES PROPUESTAS PARA LAS REDES BAYESIANAS GAUSSIANAS  
 
-¿Cuál es la probabilidad de desarrollar síndrome metabólico dado niveles altos de PM2.5 y NO2?
+==============================================================================
+PROPUESTA 1: EXPOSICIÓN A CONTAMINACIÓN Y INFLAMACIÓN SISTÉMICA
+==============================================================================
 
-
-¿Cuál es la probabilidad de síndrome metabólico en personas mayores de 60 años expuestas a niveles altos de PM2.5 vs personas menores de 40 años con la misma exposición?
-
-
-¿Cuál es la probabilidad de tener colesterol HDL bajo (<40 mg/dL hombres, <50 mg/dL mujeres) según el sexo y la edad?
-
-
-¿En qué grupo de edad (18-30, 31-50, 51-65, >65 años) es mayor el efecto de PM2.5 sobre los niveles de PCR (inflamación)?
+PREGUNTA: ¿Cuál es la probabilidad de tener niveles elevados de PCR (>3.0 mg/L) 
+en personas mayores de 50 años expuestas a alta contaminación por PM2.5?
 
 
-¿Cuál es el efecto de niveles elevados de PCR (>percentil 90) en triglicéridos y colesterol HDL?
+- PCR es marcador clave de inflamación sistémica
+- PM2.5 >35 μg/m³ excede límites OMS
+- Edad >50 aumenta vulnerabilidad a efectos de contaminación
+
+==============================================================================
+PROPUESTA 2: SÍNDROME METABÓLICO EN ZONAS CONTAMINADAS
+==============================================================================
+
+PREGUNTA: ¿Qué probabilidad existe de desarrollar alteraciones metabólicas 
+(glucosa >100 mg/dL y triglicéridos >150 mg/dL) bajo exposición conjunta 
+a NO2 y PM10 elevados?
 
 
-¿Cuál es la probabilidad de tener resistencia a la insulina alta dado PM2.5 elevado y PCR elevada simultáneamente?
+- NO2 y PM10 afectan metabolismo de glucosa
+- Combinación de criterios para síndrome metabólico
+- Umbrales basados en guías clínicas internacionales
 
+==============================================================================
+PROPUESTA 3: FUNCIÓN RENAL EN POBLACIÓN ADULTA EXPUESTA
+==============================================================================
 
-¿Cuál es la probabilidad de tener creatinina elevada (>percentil 75) dado exposición alta a SO2?
+PREGUNTA: En personas de 30-60 años con exposición elevada a SO2, 
+¿cuál es la probabilidad de tener niveles de creatinina que indiquen 
+disfunción renal inicial (>1.2 mg/dL)?
 
+- SO2 tiene efectos nefrotóxicos documentados
+- Creatinina >1.2 sugiere deterioro renal temprano
+- Rango etario de mayor productividad laboral
 
-¿Cuál es la probabilidad de tener simultáneamente creatinina alta y síndrome metabólico en presencia de múltiples contaminantes?
+==============================================================================
+PROPUESTA 4: PERFIL LIPÍDICO Y CONTAMINACIÓN URBANA
+==============================================================================
 
+PREGUNTA: ¿Cuál es la probabilidad de tener colesterol HDL bajo (<40 mg/dL) 
+en contexto de alta contaminación múltiple (PM2.5, NO2 y CO elevados) 
+en población joven adulta?
 
-¿Cuál es la probabilidad de tener hemoglobina baja dado niveles altos de ferritina y PCR (indicando inflamación)?
+- HDL bajo es factor de riesgo cardiovascular
+- Exposición múltiple refleja realidad urbana
+- Población joven permite evaluar efectos tempranos
 
+==============================================================================
+PROPUESTA 5: ANEMIA Y CONTAMINACIÓN ATMOSFÉRICA
+==============================================================================
 
-¿Cuál es la probabilidad de tener simultáneamente: glucosa >100 mg/dL, triglicéridos >150 mg/dL, y HDL bajo, dado exposición alta a PM2.5 en mujeres mayores de 45 años?
+PREGUNTA: En población con deficiencia de vitamina D (<20 ng/mL), 
+¿qué probabilidad existe de desarrollar anemia (Hemoglobina <12 g/dL) 
+bajo exposición a monóxido de carbono elevado?
 
+- CO interfiere con transporte de oxígeno
+- Deficiencia de vitamina D es prevalente en México
+- Combinación de factores nutricionales y ambientales
 
-¿Cuál es la probabilidad de tener PCR >percentil 90, ferritina >percentil 90, y hemoglobina <percentil 25 simultáneamente en presencia de múltiples contaminantes?
+==============================================================================
+PROPUESTA 6: RESISTENCIA INSULÍNICA Y CALIDAD DEL AIRE
+==============================================================================
 
+¿Cuál es la probabilidad de presentar resistencia insulínica 
+(Insulina >15 μU/mL) en personas mayores con exposición crónica a partículas PM10 en presencia de inflamación (PCR >2.0)?
 
-¿En qué combinación de edad (>50 vs ≤50) y sexo es mayor el efecto conjunto de PM2.5 y NO2 sobre el síndrome metabólico?
+- Conexión entre inflamación y resistencia insulínica
+- PM10 como factor ambiental crónico
+- Población vulnerable por edad
 
+==============================================================================
+PROPUESTA 7: FUNCIÓN HEPÁTICA Y CONTAMINANTES MÚLTIPLES
+==============================================================================
 
-¿Cuál es la probabilidad de tener resistencia a la insulina alta (HOMA-IR >percentil 75) dado niveles específicos de glucosa, insulina, y ácido úrico?
+PREGUNTA: En condiciones de alta contaminación urbana (PM2.5, NO2 y SO2 elevados), 
+¿qué probabilidad existe de tener niveles bajos de albúmina (<3.5 g/dL) 
+que sugieran compromiso de síntesis hepática?
 
-
-¿Cuánto disminuiría la probabilidad de síndrome metabólico si se redujeran los niveles de PM2.5 del percentil 90 al percentil 50?
+- Albúmina baja indica disfunción hepática
+- Exposición múltiple simula contaminación urbana real
+- Hígado como órgano de detoxificación

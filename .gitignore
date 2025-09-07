@@ -6,9 +6,9 @@
 
 # Exclude everything except data/ and scripts/ directories
 *
+!.gitignore
 !data/
 !data/**
 !scripts/
 !scripts/**
-!.gitignore
 

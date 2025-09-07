@@ -1,0 +1,234 @@
+---
+title: "dag3_proposal"
+format: html
+editor: visual
+---
+
+# Propuesta DAG 3
+
+```{r}
+library(bnlearn)
+library(tidyverse)
+```
+
+```{r}
+data <- read.csv("data/Final_Data_Dag's.csv")
+head(data)
+```
+
+```{r}
+data_clean <- data %>%
+  select(
+    PM_2_5, NO2 = NOx, SO_2, NH_3, h0303, hb02,
+    valor_PCR, valor_AC_URICO, valor_GLU_SUERO, valor_INSULINA,
+    valor_HB1AC, valor_EAG, valor_TRIG, valor_COL_HDL, 
+    valor_COL_LDL, valor_COLEST, valor_CREAT, valor_ALBU,
+    valor_FERRITINA, valor_VIT_D, valor_VIT_B12
+  ) %>%
+  rename(
+    PM25 = PM_2_5,
+    NO2 = NO2,
+    SO2 = SO_2,
+    NH3 = NH_3,
+    Edad = h0303,
+    Hemoglobina = hb02,
+    PCR = valor_PCR,
+    AcidoUrico = valor_AC_URICO,
+    Glucosa = valor_GLU_SUERO,
+    Insulina = valor_INSULINA,
+    HbA1c = valor_HB1AC,
+    EAG = valor_EAG,
+    Trigliceridos = valor_TRIG,
+    ColesterolHDL = valor_COL_HDL,
+    ColesterolLDL = valor_COL_LDL,
+    ColesterolTotal = valor_COLEST,
+    Creatinina = valor_CREAT,
+    Albumina = valor_ALBU,
+    Ferritina = valor_FERRITINA,
+    VitaminaD = valor_VIT_D,
+    VitaminaB12 = valor_VIT_B12
+  )
+```
+
+```{r}
+data_clean <- data_clean %>%
+  mutate(
+    Edad = as.numeric(Edad),
+    PM25 = as.numeric(PM25),
+    NO2 = as.numeric(NO2),
+    SO2 = as.numeric(SO2),
+    NH3 = as.numeric(NH3),
+    PCR = as.numeric(PCR),
+    AcidoUrico = as.numeric(AcidoUrico),
+    Glucosa = as.numeric(Glucosa),
+    Insulina = as.numeric(Insulina),
+    HbA1c = as.numeric(HbA1c),
+    EAG = as.numeric(EAG),
+    Trigliceridos = as.numeric(Trigliceridos),
+    ColesterolHDL = as.numeric(ColesterolHDL),
+    ColesterolLDL = as.numeric(ColesterolLDL),
+    ColesterolTotal = as.numeric(ColesterolTotal),
+    Creatinina = as.numeric(Creatinina),
+    Albumina = as.numeric(Albumina),
+    Hemoglobina = as.numeric(Hemoglobina),
+    Ferritina = as.numeric(Ferritina),
+    VitaminaD = as.numeric(VitaminaD),
+    VitaminaB12 = as.numeric(VitaminaB12),
+    SindromeMetabolico = as.numeric(
+      (Trigliceridos >= 150) | 
+      (ColesterolHDL < 40) |
+      (Glucosa >= 100)
+    ),
+    ResistenciaInsulina = as.numeric((Glucosa * Insulina) / 22.5)
+  )
+```
+
+```{r}
+dag3_nodes <- c("PM25", "NO2", "SO2", "NH3", "Edad", "PCR", "AcidoUrico", "Glucosa", "Insulina", "HbA1c", "EAG", "Trigliceridos", "ColesterolHDL", "ColesterolLDL", "ColesterolTotal", "Creatinina", "Albumina", "Hemoglobina", "Ferritina", "VitaminaD", "VitaminaB12", "SindromeMetabolico", "ResistenciaInsulina")
+```
+
+```{r}
+head(data_clean)
+```
+
+```{r}
+dag3 <- empty.graph(nodes = dag3_nodes)
+
+```
+
+```{r}
+arc_set3 <- matrix(c(
+  "Edad", "Glucosa",
+  "Edad", "PCR",
+  "Edad", "Ferritina",
+  "PM25", "PCR",
+  "NO2", "PCR",
+  "PM25", "Glucosa",
+  "NO2", "AcidoUrico",
+  "NH3", "Ferritina",
+  "Glucosa", "ResistenciaInsulina",
+  "Insulina", "ResistenciaInsulina",
+  "Glucosa", "HbA1c",
+  "HbA1c", "EAG",
+  "ResistenciaInsulina", "Trigliceridos",
+  "ResistenciaInsulina", "ColesterolHDL",
+  "ResistenciaInsulina", "ColesterolLDL",
+  "ResistenciaInsulina", "SindromeMetabolico",
+  "Trigliceridos", "SindromeMetabolico",
+  "ColesterolHDL", "SindromeMetabolico",
+  "PCR", "SindromeMetabolico",
+  "PCR", "Glucosa",
+  "PCR", "Insulina",
+  "PCR", "Trigliceridos",
+  "PCR", "Ferritina",
+  "PCR", "Hemoglobina",
+  "AcidoUrico", "ResistenciaInsulina",
+  "AcidoUrico", "PCR",
+  "ColesterolHDL", "ColesterolTotal",
+  "ColesterolLDL", "ColesterolTotal",
+  "Trigliceridos", "ColesterolTotal",
+  "SO2", "Creatinina",
+  "Creatinina", "Albumina",
+  "AcidoUrico", "Creatinina",
+  "Albumina", "VitaminaD",
+  "Albumina", "VitaminaB12",
+  "VitaminaD", "Glucosa",
+  "VitaminaD", "Insulina",
+  "VitaminaB12", "Hemoglobina",
+  "Ferritina", "ResistenciaInsulina",
+  "Ferritina", "Hemoglobina"
+  
+), byrow = TRUE, ncol = 2, dimnames = list(NULL, c("from", "to")))
+
+```
+
+```{r}
+arcs(dag3) <- arc_set3
+```
+
+```{r}
+print(dag3)
+plot(dag3, main = "DAG 3")
+```
+
+```{r}
+print(paste(acyclic(dag3)))
+```
+
+```{r}
+print(paste(narcs(dag3)))
+```
+
+```{r}
+print(arcs(dag3))
+```
+
+```{r}
+dag3_fitted <- bn.fit(dag3, data = data_clean)
+```
+
+```{r}
+library(mgcv)
+library(gratia)
+library(ggplot2)
+```
+
+```{r}
+mod_lm_PCR = lm(PCR ~ Edad, data = data_clean)
+coef(mod_lm_PCR)
+```
+
+
+```{r}
+mod_gam_PCR = gam(PCR ~ s(Edad), data = data_clean, method = "REML")
+```
+
+
+```{r}
+mod_Edad <- lm(Edad ~ 1, data = data_clean)
+mod_PM25 <- lm(PM25 ~ 1, data = data_clean)
+mod_NO2 <- lm(NO2 ~ 1, data = data_clean)
+mod_SO2 <- lm(SO2 ~ 1, data = data_clean)
+mod_NH3 <- lm(NH3 ~ 1, data = data_clean)
+```
+
+```{r}
+mod_PCR <- lm(PCR ~ Edad + PM25 + NO2, data = data_clean)
+mod_AcidoUrico <- lm(AcidoUrico ~ NO2 + PCR, data = data_clean)
+mod_Glucosa <- lm(Glucosa ~ Edad + PM25 + PCR + VitaminaD, data = data_clean)
+mod_Insulina <- lm(Insulina ~ PCR + VitaminaD, data = data_clean)
+mod_ResistenciaInsulina <- lm(ResistenciaInsulina ~ Glucosa + Insulina + AcidoUrico + Ferritina, data = data_clean)
+mod_HbA1c <- lm(HbA1c ~ Glucosa, data = data_clean)
+mod_EAG <- lm(EAG ~ HbA1c, data = data_clean)  
+mod_Trigliceridos <- lm(Trigliceridos ~ ResistenciaInsulina + PCR, data = data_clean)
+mod_ColesterolHDL <- lm(ColesterolHDL ~ ResistenciaInsulina + ColesterolTotal, data = data_clean)
+mod_ColesterolLDL <- lm(ColesterolLDL ~ ResistenciaInsulina + ColesterolTotal, data = data_clean)
+mod_ColesterolTotal <- lm(ColesterolTotal ~ ColesterolHDL + ColesterolLDL + Trigliceridos, data = data_clean)
+mod_SindromeMetabolico <- lm(SindromeMetabolico ~ ResistenciaInsulina + Trigliceridos + ColesterolHDL + PCR, data = data_clean)
+mod_Creatinina <- lm(Creatinina ~ SO2 + AcidoUrico, data = data_clean)
+mod_Albumina <- lm(Albumina ~ Creatinina, data = data_clean)
+mod_Hemoglobina <- lm(Hemoglobina ~ PCR + VitaminaB12 + Ferritina, data = data_clean)
+mod_Ferritina <- lm(Ferritina ~ Edad + NH3 + PCR, data = data_clean)
+mod_VitaminaD <- lm(VitaminaD ~ Albumina, data = data_clean)
+mod_VitaminaB12 <- lm(VitaminaB12 ~ Albumina, data = data_clean)
+```
+
+```{r}
+-1/2*(BIC(mod_PCR) + BIC(mod_AcidoUrico) + BIC(mod_Glucosa) + BIC(mod_Insulina) + 
+      BIC(mod_ResistenciaInsulina) + BIC(mod_HbA1c) + BIC(mod_EAG) + BIC(mod_Trigliceridos) +
+      BIC(mod_ColesterolHDL) + BIC(mod_ColesterolLDL) + BIC(mod_ColesterolTotal) +
+      BIC(mod_SindromeMetabolico) + BIC(mod_Creatinina) + BIC(mod_Albumina) +
+      BIC(mod_Hemoglobina) + BIC(mod_Ferritina) + BIC(mod_VitaminaD) + BIC(mod_VitaminaB12) +
+      BIC(mod_Edad) + BIC(mod_PM25) + BIC(mod_NO2) + BIC(mod_SO2) + BIC(mod_NH3))
+```
+
+```{r}
+X_imp <- data_clean
+for (v in names(X_imp)) {
+  m <- median(X_imp[[v]], na.rm = TRUE)
+  X_imp[[v]][is.na(X_imp[[v]])] <- m
+}
+score(dag3, data = X_imp, type = "bic-g")
+```
+
+
