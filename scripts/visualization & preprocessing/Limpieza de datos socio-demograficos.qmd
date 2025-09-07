@@ -1,0 +1,36 @@
+---
+title: "Limpieza de datos socio-demográficos"
+author: "Andrés Mtz"
+format: html
+editor: visual
+---
+
+```{python}
+import pandas as pd
+```
+
+
+```{python}
+data = pd.read_csv("data/ensanut2022_socdem(1).csv", sep=";")
+```
+
+
+```{python}
+columnas = ['FOLIO_INT', 'h0302', 'h0303', 'h0402', 'entidad1', 'desc_ent1', 'municipio1', 'desc_mun1', 'ponde_f', 'estrato']
+```
+
+
+```{python}
+data_limpio = data[columnas].copy()
+```
+
+
+```{python}
+data_limpio.to_csv("data/ensanut2022_socdem_limpio.csv", index=False)
+```
+
+
+```{python}
+data_limpio.head()
+```
+

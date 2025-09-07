@@ -1,0 +1,42 @@
+QUERIES PROPUESTAS PARA LAS REDES BAYESIANAS GAUSSIANAS
+
+¿Cuál es la probabilidad de desarrollar síndrome metabólico dado niveles altos de PM2.5 y NO2?
+
+
+¿Cuál es la probabilidad de síndrome metabólico en personas mayores de 60 años expuestas a niveles altos de PM2.5 vs personas menores de 40 años con la misma exposición?
+
+
+¿Cuál es la probabilidad de tener colesterol HDL bajo (<40 mg/dL hombres, <50 mg/dL mujeres) según el sexo y la edad?
+
+
+¿En qué grupo de edad (18-30, 31-50, 51-65, >65 años) es mayor el efecto de PM2.5 sobre los niveles de PCR (inflamación)?
+
+
+¿Cuál es el efecto de niveles elevados de PCR (>percentil 90) en triglicéridos y colesterol HDL?
+
+
+¿Cuál es la probabilidad de tener resistencia a la insulina alta dado PM2.5 elevado y PCR elevada simultáneamente?
+
+
+¿Cuál es la probabilidad de tener creatinina elevada (>percentil 75) dado exposición alta a SO2?
+
+
+¿Cuál es la probabilidad de tener simultáneamente creatinina alta y síndrome metabólico en presencia de múltiples contaminantes?
+
+
+¿Cuál es la probabilidad de tener hemoglobina baja dado niveles altos de ferritina y PCR (indicando inflamación)?
+
+
+¿Cuál es la probabilidad de tener simultáneamente: glucosa >100 mg/dL, triglicéridos >150 mg/dL, y HDL bajo, dado exposición alta a PM2.5 en mujeres mayores de 45 años?
+
+
+¿Cuál es la probabilidad de tener PCR >percentil 90, ferritina >percentil 90, y hemoglobina <percentil 25 simultáneamente en presencia de múltiples contaminantes?
+
+
+¿En qué combinación de edad (>50 vs ≤50) y sexo es mayor el efecto conjunto de PM2.5 y NO2 sobre el síndrome metabólico?
+
+
+¿Cuál es la probabilidad de tener resistencia a la insulina alta (HOMA-IR >percentil 75) dado niveles específicos de glucosa, insulina, y ácido úrico?
+
+
+¿Cuánto disminuiría la probabilidad de síndrome metabólico si se redujeran los niveles de PM2.5 del percentil 90 al percentil 50?

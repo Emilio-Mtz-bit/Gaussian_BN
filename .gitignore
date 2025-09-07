@@ -5,7 +5,10 @@
 .Ruserdata
 
 # Exclude everything except data/ and scripts/ directories
-/*
-!/data/
-!/scripts/
+*
+!data/
+!data/**
+!scripts/
+!scripts/**
 !.gitignore
+
