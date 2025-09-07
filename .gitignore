@@ -7,6 +7,8 @@
 # Exclude everything except data/ and scripts/ directories
 *
 !.gitignore
+!README.md
+!*.Rproj
 !data/
 !data/**
 !scripts/
