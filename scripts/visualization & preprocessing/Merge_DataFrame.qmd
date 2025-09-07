@@ -20,11 +20,6 @@ df_blood
 df_socdem
 ```
 
-```{r}
-df_blood = subset(df_blood, select = -FOLIO_I)
-df_blood$desc_mun <- sub("^[0-9]+\\s+", "", df_blood$desc_mun)
-df_blood
-```
 
 ```{r}
 df_blood_socdem = merge(df_blood, df_socdem, by = "FOLIO_INT", all.x = TRUE)
@@ -55,7 +50,7 @@ df_limpio
 
 
 ```{r}
-df_aire = read.csv("data/calidad_aire_2025.csv")
+df_aire = read.csv("../../data/calidad_aire_2025.csv")
 ```
 
 ```{r}
