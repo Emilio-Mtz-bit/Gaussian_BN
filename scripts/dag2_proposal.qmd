@@ -1,0 +1,174 @@
+---
+title: "dag2:proposal"
+format: html
+editor: visual
+---
+
+# Propuesta DAG 2: Efectos Mediados por Demografía
+
+Esta segunda propuesta enfatiza el papel de las variables demográficas como modificadoras de efecto y mediadoras, considerando grupos vulnerables (edad \>40 años, diferencias por sexo).
+
+```{r}
+library(bnlearn)
+library(tidyverse)
+```
+
+```{r}
+
+muestras <- read.csv("data/ensanut2022_muestras.csv", sep = ";")
+calidad_aire <- read.csv("data/calidad_aire_2025.csv")
+data <- read.csv("data/Final_Data_Dag's.csv")
+
+data
+```
+
+```{r}
+data_clean <- data %>%
+  select(
+    PM_2_5, NO2 = NOx, SO_2, NH_3, h0303, hb02,
+    valor_PCR, valor_AC_URICO, valor_GLU_SUERO, valor_INSULINA,
+    valor_HB1AC, valor_EAG, valor_TRIG, valor_COL_HDL, 
+    valor_COL_LDL, valor_COLEST, valor_CREAT, valor_ALBU,
+    valor_FERRITINA, valor_VIT_D, valor_VIT_B12, PM_010, valor_FOL
+  ) %>%
+  rename(
+    PM25 = PM_2_5,
+     PM10  = PM_010,
+    NO2 = NO2,
+    SO2 = SO_2,
+    NH3 = NH_3,
+    Edad = h0303,
+    Hemoglobina = hb02,
+    PCR = valor_PCR,
+    AcidoUrico = valor_AC_URICO,
+    Glucosa = valor_GLU_SUERO,
+    Insulina = valor_INSULINA,
+    HbA1c = valor_HB1AC,
+    EAG = valor_EAG,
+    Trigliceridos = valor_TRIG,
+    ColesterolHDL = valor_COL_HDL,
+    ColesterolLDL = valor_COL_LDL,
+    ColesterolTotal = valor_COLEST,
+    Creatinina = valor_CREAT,
+    Albumina = valor_ALBU,
+    Ferritina = valor_FERRITINA,
+    VitaminaD = valor_VIT_D,
+    VitaminaB12 = valor_VIT_B12,
+    Folatos = valor_FOL,
+ 
+
+  )
+```
+
+```{r}
+data_clean <- data_clean %>%
+  mutate(
+    Edad = as.numeric(Edad),
+    PM25 = as.numeric(PM25),
+    NO2 = as.numeric(NO2),
+    SO2 = as.numeric(SO2),
+    NH3 = as.numeric(NH3),
+    PCR = as.numeric(PCR),
+    AcidoUrico = as.numeric(AcidoUrico),
+    Glucosa = as.numeric(Glucosa),
+    Insulina = as.numeric(Insulina),
+    HbA1c = as.numeric(HbA1c),
+    EAG = as.numeric(EAG),
+    Trigliceridos = as.numeric(Trigliceridos),
+    ColesterolHDL = as.numeric(ColesterolHDL),
+    ColesterolLDL = as.numeric(ColesterolLDL),
+    ColesterolTotal = as.numeric(ColesterolTotal),
+    Creatinina = as.numeric(Creatinina),
+    Albumina = as.numeric(Albumina),
+    Hemoglobina = as.numeric(Hemoglobina),
+    Ferritina = as.numeric(Ferritina),
+    VitaminaD = as.numeric(VitaminaD),
+    VitaminaB12 = as.numeric(VitaminaB12),
+    PM10 = as.numeric(PM10),
+     
+
+   
+  )
+```
+
+```{r}
+dag2_nodes <- c("PM25", "PM10", "NO2", "SO2", "Edad", "PCR", "AcidoUrico", "Glucosa", "Insulina", "HbA1c", "Trigliceridos", "ColesterolHDL", "ColesterolLDL", "Creatinina", "Albumina", "Hemoglobina", "Ferritina", "VitaminaD", "VitaminaB12", "Folatos")
+
+data_clean=data_clean[,dag2_nodes]
+data_clean
+
+```
+
+```{r}
+dag2 <- empty.graph(nodes = dag2_nodes)
+```
+
+```{r}
+arc_set2 <- matrix(c(
+  "Edad", "PCR",
+
+  "Edad", "Glucosa",
+  "Edad", "Trigliceridos", 
+  
+  "PM25", "Edad",
+  "PM10", "Edad",
+  
+  "Edad", "AcidoUrico",
+ 
+  "Edad", "Creatinina",
+  "PM25", "PCR",
+    "PM10", "PCR",
+  "NO2", "PCR",
+  "PM25", "AcidoUrico",
+  "PM10", "AcidoUrico",
+  
+  "PCR", "Glucosa",
+  "PCR", "Insulina",
+  "PCR", "Trigliceridos",
+  "PCR", "Ferritina",
+  "AcidoUrico", "Glucosa",
+  "AcidoUrico", "Trigliceridos",
+  "Glucosa", "HbA1c",
+  "Glucosa", "Trigliceridos", 
+  "Insulina", "Trigliceridos",
+  "Insulina", "ColesterolHDL",
+   "Insulina", "ColesterolLDL",
+  "Creatinina", "Albumina",
+  "PM25", "Creatinina",
+  "PM10", "Creatinina",
+  "Albumina", "VitaminaD",
+   "Albumina", "VitaminaB12",
+  "VitaminaB12", "Folatos",
+  "VitaminaD", "Glucosa",
+  "SO2", "Hemoglobina",
+  "PCR", "Hemoglobina"
+  
+), byrow = TRUE, ncol = 2, dimnames = list(NULL, c("from", "to")))
+```
+
+```{r}
+arcs(dag2) <- arc_set2
+```
+
+```{r}
+graphviz.plot(dag2, shape = "ellipse")
+
+```
+
+```{r}
+data_clean <- na.omit(data_clean)
+
+score(dag2,data = data_clean,type = "bic-g")
+```
+
+```{r}
+score(dag2,data = data_clean,type = "aic-g")
+```
+
+```{r}
+print(paste(narcs(dag2)))
+```
+
+```{r}
+print(arcs(dag2))
+```
