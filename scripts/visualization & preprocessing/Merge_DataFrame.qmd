@@ -29,8 +29,14 @@ df_blood_socdem = merge(df_blood, df_socdem, by = "FOLIO_INT", all.x = TRUE)
 df_blood_socdem
 ```
 ```{r}
+df_blood_socdem$h0402[is.na(df_blood_socdem$h0402)] = 0.0
+df_blood_socdem
+```
+
+```{r}
 df_limpio <- na.omit(df_blood_socdem)
 ```
+
 
 ```{r}
 df_limpio = df_limpio |>
