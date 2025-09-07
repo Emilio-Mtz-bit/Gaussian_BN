@@ -1,0 +1,106 @@
+---
+title: "Merge_Final DF"
+format: html
+editor: source
+---
+
+
+```{r}
+df_socdem = read.csv("../../data/ensanut2022_socdem_limpio.csv")
+df_blood = read.csv("../../data/ensanut2022_muestras_limpio.csv")
+```
+
+
+```{r}
+df_blood
+```
+
+
+```{r}
+df_socdem
+```
+
+```{r}
+df_blood = subset(df_blood, select = -FOLIO_I)
+df_blood$desc_mun <- sub("^[0-9]+\\s+", "", df_blood$desc_mun)
+df_blood
+```
+
+```{r}
+df_blood_socdem = merge(df_blood, df_socdem, by = "FOLIO_INT", all.x = TRUE)
+```
+
+```{r}
+df_blood_socdem
+```
+```{r}
+df_limpio <- na.omit(df_blood_socdem)
+```
+
+```{r}
+df_limpio = df_limpio |>
+  mutate(ponde_f = as.numeric(str_replace(ponde_f, ",", "\\.")))
+```
+
+
+```{r}
+df_limpio
+```
+
+
+```{r}
+df_limpio$desc_mun1 = sub("^[0-9]+\\s+", "", df_limpio$desc_mun1)
+df_limpio
+```
+
+
+```{r}
+df_aire = read.csv("data/calidad_aire_2025.csv")
+```
+
+```{r}
+df_aire = subset(df_aire, select = -Entidad_federativa)
+```
+
+```{r}
+df_aire
+```
+
+```{r}
+df_aire_final = df_aire %>%
+  group_by(Municipio) %>%
+  summarise(across(where(is.numeric), ~ mean(., na.rm = TRUE)))
+```
+
+
+
+```{r}
+df_aire_final
+```
+
+```{r}
+df_aire_final$Municipio = toupper(df_aire_final$Municipio)
+```
+
+```{r}
+df_aire_final <- df_aire_final |> 
+  rename(desc_mun1 = Municipio)
+df_aire_final
+```
+
+
+```{r}
+df_merged = merge(df_limpio, df_aire_final, by = "desc_mun1", all.x = TRUE)
+```
+
+```{r}
+df_merged
+```
+
+```{r}
+write.csv(df_merged, "../../data/Final_Data_Dag's.csv", row.names = FALSE)
+```
+
+
+
+
