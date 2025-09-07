@@ -1,12 +1,18 @@
 
+
 ```{r}
-data_aire = read.csv("./data/calidad_aire_2025.csv")
+library(readr)
+library(tidyverse)
+```
+
+```{r}
+data_aire =  read.csv("../../data/calidad_aire_2025.csv")
 data_aire
 
-data_muestras = read.csv("./data/ensanut2022_muestras.csv", sep = ";")
+data_muestras = read.csv("../../data/ensanut2022_muestras.csv", sep = ";")
 data_muestras
 
-data_socdem = read.csv("./data/ensanut2022_socdem.csv", sep = ";")
+data_socdem = read.csv("../../data/ensanut2022_socdem.csv", sep = ";")
 data_socdem
 
 data_muestras
@@ -14,14 +20,37 @@ data_muestras
 
 
 ```
+
+
+
 ```{r}
 colnames(data_muestras)
 ```
+
+
 ```{r}
-new_cols =c("FOLIO_INT","entidad","desc_ent", "desc_mun", "sc","sv","sh","sm","int_hemoglobina","hb02","valor_AC_URICO","valor_ALBU","valor_COL_HDL","valor_COL_LDL","valor_COLEST","valor_CREAT","valor_GLU_SUERO","valor_INSULINA","valor_PCR","valor_TRIG","valor_EAG","valor_HB1AC","valor_FERRITINA","valor_FOL","valor_HCST","valor_PROTCREAC","valor_STFR_FEB23","valor_VIT_B12","valor_VIT_D","ponde_v","ponde_m12a49","ponde_m0a11")  
+new_cols =c("FOLIO_INT", "sc","sv","sh","sm","int_hemoglobina","hb02","valor_AC_URICO","valor_ALBU","valor_COL_HDL","valor_COL_LDL","valor_COLEST","valor_CREAT","valor_GLU_SUERO","valor_INSULINA","valor_PCR","valor_TRIG","valor_EAG","valor_HB1AC","valor_FERRITINA","valor_FOL","valor_HCST","valor_PROTCREAC","valor_STFR_FEB23","valor_VIT_B12","valor_VIT_D")  
 
 data_muestras_filtered=data_muestras[new_cols]# Las columnas que usaremos 
 data_muestras_filtered=na.omit(data_muestras_filtered)
-class(data_muestras_filtered[1, "valor_FERRITINA"])
 ```
+
+```{r}
+data_muestras_filtered = data_muestras_filtered |> 
+        mutate(across(contains("valor"),~as.numeric(str_replace(.,",","\\."))))
+
+data_muestras_filtered = data_muestras_filtered |>
+  mutate(hb02 = as.numeric(str_replace(hb02, ",", "\\.")))
+```
+
+
+```{r}
+data_muestras_filtered
+```
+
+
+```{r}
+write.csv(data_muestras_filtered, "../../data/ensanut2022_muestras_limpio.csv", row.names = FALSE)
+```
+
 
