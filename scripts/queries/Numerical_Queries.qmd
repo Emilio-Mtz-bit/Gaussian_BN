@@ -68,8 +68,7 @@ data_clean <- data %>%
     PM_2_5, NOx, SO_2, h0303, hb02,
     valor_PCR, valor_AC_URICO, valor_GLU_SUERO, valor_INSULINA,
     valor_HB1AC, valor_TRIG, valor_COL_HDL, 
-    valor_COL_LDL, valor_COLEST, valor_CREAT, valor_ALBU,
-    valor_FERRITINA, valor_VIT_D, CO, PM_010, COV
+    valor_COL_LDL, valor_COLEST, valor_CREAT, valor_ALBU, CO, PM_010, COV
   ) %>%
   rename(
     NO2 = NOx,
@@ -89,8 +88,6 @@ data_clean <- data %>%
     ColesterolTotal = valor_COLEST,
     Creatinina = valor_CREAT,
     Albumina = valor_ALBU,
-    Ferritina = valor_FERRITINA,
-    VitaminaD = valor_VIT_D
   )
 ```
 
@@ -100,7 +97,7 @@ data_clean
 
 
 ```{r}
-dag = empty.graph(nodes = c("Hemoglobina", "AcidoUrico", "Albumina", "ColesterolHDL", "ColesterolLDL", "ColesterolTotal", "Creatinina", "Glucosa", "Insulina", "PCR", "Trigliceridos", "HbA1c", "Ferritina", "VitaminaD", "Edad", "SO2", "CO", "NO2", "PM10", "PM25", "COV"))
+dag = empty.graph(nodes = c("Hemoglobina", "AcidoUrico", "Albumina", "ColesterolHDL", "ColesterolLDL", "ColesterolTotal", "Creatinina", "Glucosa", "Insulina", "PCR", "Trigliceridos", "HbA1c", "Edad", "SO2", "CO", "NO2", "PM10", "PM25", "COV"))
 
 ```
 
@@ -117,7 +114,6 @@ arc_set = matrix(c("Edad", "PCR",
                    "PCR", "Insulina",       
                    "PCR", "Trigliceridos",  
                    "PCR", "ColesterolHDL",  
-                   "PCR", "Ferritina",      
                    "PM25", "Trigliceridos",  
                    "NO2", "Trigliceridos",  
                    "PM25", "ColesterolLDL",  
@@ -131,9 +127,6 @@ arc_set = matrix(c("Edad", "PCR",
                    "PM25", "AcidoUrico",     
                    "Creatinina", "Albumina",       
                    "CO", "Hemoglobina",    
-                   "Albumina", "VitaminaD",      
-                   "VitaminaD", "Glucosa",        
-                   "VitaminaD", "ColesterolTotal",
                    "PCR", "Hemoglobina",
                    "SO2","Hemoglobina",
                    "COV","HbA1c",

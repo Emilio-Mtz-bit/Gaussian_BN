@@ -12,7 +12,14 @@ df_blood = read.csv("../../data/ensanut2022_muestras_limpio.csv")
 
 
 ```{r}
-df_blood
+df_blood <- df_blood %>%
+  select(-valor_FERRITINA,
+         -valor_FOL,
+         -valor_HCST,
+         -valor_PROTCREAC,
+         -valor_STFR_FEB23,
+         -valor_VIT_B12,
+         -valor_VIT_D)
 ```
 
 
@@ -59,9 +66,7 @@ df_limpio
 df_aire = read.csv("../../data/calidad_aire_2025.csv")
 ```
 
-```{r}
-df_aire = subset(df_aire, select = -Entidad_federativa)
-```
+
 
 ```{r}
 df_aire
@@ -90,6 +95,7 @@ df_aire_final
 ```
 
 
+
 ```{r}
 df_merged = merge(df_limpio, df_aire_final, by = "desc_mun1", all.x = TRUE)
 ```
@@ -98,9 +104,15 @@ df_merged = merge(df_limpio, df_aire_final, by = "desc_mun1", all.x = TRUE)
 df_merged
 ```
 
+
 ```{r}
 write.csv(df_merged, "../../data/Final_Data_Dag's.csv", row.names = FALSE)
 ```
+
+
+
+
+
 
 
 
