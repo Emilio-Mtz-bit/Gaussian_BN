@@ -74,17 +74,12 @@ data_clean <- data_clean %>%
     Ferritina = as.numeric(Ferritina),
     VitaminaD = as.numeric(VitaminaD),
     VitaminaB12 = as.numeric(VitaminaB12),
-    SindromeMetabolico = as.numeric(
-      (Trigliceridos >= 150) | 
-      (ColesterolHDL < 40) |
-      (Glucosa >= 100)
-    ),
     ResistenciaInsulina = as.numeric((Glucosa * Insulina) / 22.5)
   )
 ```
 
 ```{r}
-dag3_nodes <- c("PM25", "NO2", "SO2", "NH3", "Edad", "PCR", "AcidoUrico", "Glucosa", "Insulina", "HbA1c", "EAG", "Trigliceridos", "ColesterolHDL", "ColesterolLDL", "ColesterolTotal", "Creatinina", "Albumina", "Hemoglobina", "Ferritina", "VitaminaD", "VitaminaB12", "SindromeMetabolico", "ResistenciaInsulina")
+dag3_nodes <- c("PM25", "NO2", "SO2", "NH3", "Edad", "PCR", "AcidoUrico", "Glucosa", "Insulina", "HbA1c", "EAG", "Trigliceridos", "ColesterolHDL", "ColesterolLDL", "ColesterolTotal", "Creatinina", "Albumina", "Hemoglobina", "Ferritina", "VitaminaD", "VitaminaB12", "ResistenciaInsulina")
 ```
 
 ```{r}
@@ -113,10 +108,6 @@ arc_set3 <- matrix(c(
   "ResistenciaInsulina", "Trigliceridos",
   "ResistenciaInsulina", "ColesterolHDL",
   "ResistenciaInsulina", "ColesterolLDL",
-  "ResistenciaInsulina", "SindromeMetabolico",
-  "Trigliceridos", "SindromeMetabolico",
-  "ColesterolHDL", "SindromeMetabolico",
-  "PCR", "SindromeMetabolico",
   "PCR", "Glucosa",
   "PCR", "Insulina",
   "PCR", "Trigliceridos",
@@ -204,7 +195,6 @@ mod_Trigliceridos <- lm(Trigliceridos ~ ResistenciaInsulina + PCR, data = data_c
 mod_ColesterolHDL <- lm(ColesterolHDL ~ ResistenciaInsulina + ColesterolTotal, data = data_clean)
 mod_ColesterolLDL <- lm(ColesterolLDL ~ ResistenciaInsulina + ColesterolTotal, data = data_clean)
 mod_ColesterolTotal <- lm(ColesterolTotal ~ ColesterolHDL + ColesterolLDL + Trigliceridos, data = data_clean)
-mod_SindromeMetabolico <- lm(SindromeMetabolico ~ ResistenciaInsulina + Trigliceridos + ColesterolHDL + PCR, data = data_clean)
 mod_Creatinina <- lm(Creatinina ~ SO2 + AcidoUrico, data = data_clean)
 mod_Albumina <- lm(Albumina ~ Creatinina, data = data_clean)
 mod_Hemoglobina <- lm(Hemoglobina ~ PCR + VitaminaB12 + Ferritina, data = data_clean)
@@ -217,7 +207,7 @@ mod_VitaminaB12 <- lm(VitaminaB12 ~ Albumina, data = data_clean)
 -1/2*(BIC(mod_PCR) + BIC(mod_AcidoUrico) + BIC(mod_Glucosa) + BIC(mod_Insulina) + 
       BIC(mod_ResistenciaInsulina) + BIC(mod_HbA1c) + BIC(mod_EAG) + BIC(mod_Trigliceridos) +
       BIC(mod_ColesterolHDL) + BIC(mod_ColesterolLDL) + BIC(mod_ColesterolTotal) +
-      BIC(mod_SindromeMetabolico) + BIC(mod_Creatinina) + BIC(mod_Albumina) +
+      BIC(mod_Creatinina) + BIC(mod_Albumina) +
       BIC(mod_Hemoglobina) + BIC(mod_Ferritina) + BIC(mod_VitaminaD) + BIC(mod_VitaminaB12) +
       BIC(mod_Edad) + BIC(mod_PM25) + BIC(mod_NO2) + BIC(mod_SO2) + BIC(mod_NH3))
 ```

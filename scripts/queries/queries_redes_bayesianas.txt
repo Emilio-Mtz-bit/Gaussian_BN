@@ -1,85 +1,183 @@
-QUERIES PROPUESTAS PARA LAS REDES BAYESIANAS GAUSSIANAS  
+QUERIES PROPUESTAS PARA LAS REDES BAYESIANAS GAUSSIANAS - DAG 3
+
+CONTEXTO DEL PROYECTO:
+- Analizar el impacto de contaminantes atmosféricos en biomarcadores de salud
+- Red Bayesiana Gaussiana basada en datos de ENSANUT2020  
+- DAG 3: Enfoque en síndrome metabólico y resistencia insulínica
 
 ==============================================================================
 PROPUESTA 1: EXPOSICIÓN A CONTAMINACIÓN Y INFLAMACIÓN SISTÉMICA
 ==============================================================================
 
 PREGUNTA: ¿Cuál es la probabilidad de tener niveles elevados de PCR (>3.0 mg/L) 
-en personas mayores de 50 años expuestas a alta contaminación por PM2.5?
+en personas mayores de 50 años expuestas a alta contaminación por PM2.5 y NO2?
 
+QUERY R:
+cpquery(dag3_fitted, 
+        event = (PCR > 3.0), 
+        evidence = (Edad > 50) & (PM25 > 35) & (NO2 > 40), 
+        n = 10^6)
 
+JUSTIFICACIÓN CIENTÍFICA:
 - PCR es marcador clave de inflamación sistémica
-- PM2.5 >35 μg/m³ excede límites OMS
+- PM2.5 y NO2 están directamente conectados a PCR en DAG3
 - Edad >50 aumenta vulnerabilidad a efectos de contaminación
 
 ==============================================================================
-PROPUESTA 2: SÍNDROME METABÓLICO EN ZONAS CONTAMINADAS
+PROPUESTA 2: ALTERACIONES LIPÍDICAS POR RESISTENCIA INSULÍNICA
 ==============================================================================
 
-PREGUNTA: ¿Qué probabilidad existe de desarrollar alteraciones metabólicas 
-(glucosa >100 mg/dL y triglicéridos >150 mg/dL) bajo exposición conjunta 
-a NO2 y PM10 elevados?
+PREGUNTA: ¿Qué probabilidad existe de desarrollar alteraciones lipídicas múltiples
+(triglicéridos >150 mg/dL y HDL <40 mg/dL) bajo condiciones de alta resistencia 
+insulínica con exposición a contaminantes?
 
+QUERY R:
+cpquery(dag3_fitted, 
+        event = (Trigliceridos > 150) & (ColesterolHDL < 40), 
+        evidence = (ResistenciaInsulina > 4.0) & (PM25 > 30) & (NH3 > 50), 
+        n = 10^6)
 
-- NO2 y PM10 afectan metabolismo de glucosa
-- Combinación de criterios para síndrome metabólico
-- Umbrales basados en guías clínicas internacionales
+JUSTIFICACIÓN CIENTÍFICA:
+- ResistenciaInsulina → Trigliceridos/ColesterolHDL relación directa en DAG3
+- PM25 y NH3 afectan indirectamente vía PCR y ferritina
+- Alteraciones lipídicas predicen riesgo cardiovascular
 
 ==============================================================================
-PROPUESTA 3: FUNCIÓN RENAL EN POBLACIÓN ADULTA EXPUESTA
+PROPUESTA 3: FUNCIÓN RENAL Y ÁCIDO ÚRICO ELEVADO
 ==============================================================================
 
-PREGUNTA: En personas de 30-60 años con exposición elevada a SO2, 
+PREGUNTA: En personas de 30-60 años con exposición elevada a NO2, 
 ¿cuál es la probabilidad de tener niveles de creatinina que indiquen 
-disfunción renal inicial (>1.2 mg/dL)?
+disfunción renal (>1.2 mg/dL) mediada por ácido úrico elevado?
 
-- SO2 tiene efectos nefrotóxicos documentados
-- Creatinina >1.2 sugiere deterioro renal temprano
-- Rango etario de mayor productividad laboral
+QUERY R:
+cpquery(dag3_fitted, 
+        event = (Creatinina > 1.2), 
+        evidence = (Edad > 30) & (Edad < 60) & (NO2 > 40) & (AcidoUrico > 6.0), 
+        n = 10^6)
+
+JUSTIFICACIÓN CIENTÍFICA:
+- NO2 → AcidoUrico → Creatinina según relaciones DAG3
+- SO2 también conectado directamente a Creatinina
+- Ácido úrico >6.0 es hiperuricemia clínica
 
 ==============================================================================
-PROPUESTA 4: PERFIL LIPÍDICO Y CONTAMINACIÓN URBANA
+PROPUESTA 4: PERFIL LIPÍDICO Y RESISTENCIA INSULÍNICA
 ==============================================================================
 
 PREGUNTA: ¿Cuál es la probabilidad de tener colesterol HDL bajo (<40 mg/dL) 
-en contexto de alta contaminación múltiple (PM2.5, NO2 y CO elevados) 
-en población joven adulta?
+en contexto de resistencia insulínica alta (>3.5) en población joven adulta 
+con inflamación elevada?
 
-- HDL bajo es factor de riesgo cardiovascular
-- Exposición múltiple refleja realidad urbana
-- Población joven permite evaluar efectos tempranos
+QUERY R:
+cpquery(dag3_fitted, 
+        event = (ColesterolHDL < 40), 
+        evidence = (Edad < 40) & (ResistenciaInsulina > 3.5) & (PCR > 2.0), 
+        n = 10^6)
+
+JUSTIFICACIÓN CIENTÍFICA:
+- ResistenciaInsulina → ColesterolHDL relación directa en DAG3
+- PCR como mediador de inflamación sistémica
+- Población joven permite evaluar efectos metabólicos tempranos
 
 ==============================================================================
-PROPUESTA 5: ANEMIA Y CONTAMINACIÓN ATMOSFÉRICA
+PROPUESTA 5: ANEMIA POR DEFICIENCIAS NUTRICIONALES
 ==============================================================================
 
-PREGUNTA: En población con deficiencia de vitamina D (<20 ng/mL), 
+PREGUNTA: En población con deficiencia de vitamina D (<20 ng/mL) y B12 (<200 pg/mL), 
 ¿qué probabilidad existe de desarrollar anemia (Hemoglobina <12 g/dL) 
-bajo exposición a monóxido de carbono elevado?
+bajo exposición a contaminación e inflamación?
 
-- CO interfiere con transporte de oxígeno
-- Deficiencia de vitamina D es prevalente en México
-- Combinación de factores nutricionales y ambientales
+QUERY R:
+cpquery(dag3_fitted, 
+        event = (Hemoglobina < 12), 
+        evidence = (VitaminaD < 20) & (VitaminaB12 < 200) & (PCR > 2.5), 
+        n = 10^6)
 
-==============================================================================
-PROPUESTA 6: RESISTENCIA INSULÍNICA Y CALIDAD DEL AIRE
-==============================================================================
-
-¿Cuál es la probabilidad de presentar resistencia insulínica 
-(Insulina >15 μU/mL) en personas mayores con exposición crónica a partículas PM10 en presencia de inflamación (PCR >2.0)?
-
-- Conexión entre inflamación y resistencia insulínica
-- PM10 como factor ambiental crónico
-- Población vulnerable por edad
+JUSTIFICACIÓN CIENTÍFICA:
+- VitaminaB12 → Hemoglobina conexión directa en DAG3
+- PCR → Hemoglobina por inflamación sistémica
+- Deficiencias nutricionales prevalentes en México
 
 ==============================================================================
-PROPUESTA 7: FUNCIÓN HEPÁTICA Y CONTAMINANTES MÚLTIPLES
+PROPUESTA 6: CASCADA METABÓLICA COMPLETA
 ==============================================================================
 
-PREGUNTA: En condiciones de alta contaminación urbana (PM2.5, NO2 y SO2 elevados), 
+PREGUNTA: ¿Cuál es la probabilidad de tener alteraciones metabólicas múltiples 
+(glucosa >100, triglicéridos >150, HbA1c >5.7) en personas mayores con 
+exposición crónica y deficiencia de vitamina D?
+
+QUERY R:
+cpquery(dag3_fitted, 
+        event = (Glucosa > 100) & (Trigliceridos > 150) & (HbA1c > 5.7), 
+        evidence = (Edad > 55) & (PM25 > 30) & (VitaminaD < 20), 
+        n = 10^6)
+
+JUSTIFICACIÓN CIENTÍFICA:
+- Múltiples vías: VitaminaD → Glucosa/Insulina → HbA1c
+- ResistenciaInsulina → Trigliceridos en DAG3
+- Población vulnerable por edad y déficit vitamínico
+
+==============================================================================
+PROPUESTA 7: FUNCIÓN HEPÁTICA Y VITAMINAS
+==============================================================================
+
+PREGUNTA: En condiciones de disfunción renal (creatinina >1.1 mg/dL), 
 ¿qué probabilidad existe de tener niveles bajos de albúmina (<3.5 g/dL) 
-que sugieran compromiso de síntesis hepática?
+que afecten el metabolismo de vitaminas D y B12?
 
-- Albúmina baja indica disfunción hepática
-- Exposición múltiple simula contaminación urbana real
-- Hígado como órgano de detoxificación
+QUERY R:
+cpquery(dag3_fitted, 
+        event = (Albumina < 3.5) & (VitaminaD < 15) & (VitaminaB12 < 150), 
+        evidence = (Creatinina > 1.1) & (SO2 > 20), 
+        n = 10^6)
+
+JUSTIFICACIÓN CIENTÍFICA:
+- Creatinina → Albumina → VitaminaD/B12 cascada en DAG3
+- SO2 como factor nefrotóxico directo
+- Albúmina baja compromete transporte vitamínico
+
+==============================================================================
+IMPLEMENTACIÓN EN R - CÓDIGO COMPLETO DAG3
+==============================================================================
+
+# Cargar modelo ajustado del DAG3
+library(bnlearn)
+dag3_fitted <- bn.fit(dag3, data = X_imp)
+
+# Ejecutar todas las queries DAG3
+query_1 <- cpquery(dag3_fitted, event = (PCR > 3.0), 
+                   evidence = (Edad > 50) & (PM25 > 35) & (NO2 > 40), n = 10^6)
+
+query_2 <- cpquery(dag3_fitted, event = (Trigliceridos > 150) & (ColesterolHDL < 40), 
+                   evidence = (ResistenciaInsulina > 4.0) & (PM25 > 30) & (NH3 > 50), n = 10^6)
+
+query_3 <- cpquery(dag3_fitted, event = (Creatinina > 1.2), 
+                   evidence = (Edad > 30) & (Edad < 60) & (NO2 > 40) & (AcidoUrico > 6.0), n = 10^6)
+
+query_4 <- cpquery(dag3_fitted, event = (ColesterolHDL < 40), 
+                   evidence = (Edad < 40) & (ResistenciaInsulina > 3.5) & (PCR > 2.0), n = 10^6)
+
+query_5 <- cpquery(dag3_fitted, event = (Hemoglobina < 12), 
+                   evidence = (VitaminaD < 20) & (VitaminaB12 < 200) & (PCR > 2.5), n = 10^6)
+
+query_6 <- cpquery(dag3_fitted, event = (Glucosa > 100) & (Trigliceridos > 150) & (HbA1c > 5.7), 
+                   evidence = (Edad > 55) & (PM25 > 30) & (VitaminaD < 20), n = 10^6)
+
+query_7 <- cpquery(dag3_fitted, event = (Albumina < 3.5) & (VitaminaD < 15) & (VitaminaB12 < 150), 
+                   evidence = (Creatinina > 1.1) & (SO2 > 20), n = 10^6)
+
+# Crear dataframe con resultados DAG3
+resultados_dag3 <- data.frame(
+  Query = paste("Query", 1:7),
+  Descripcion = c("PCR elevado + Edad + PM25 + NO2",
+                  "Alteraciones lipídicas + ResistenciaInsulina + Contaminantes",
+                  "Disfunción renal + NO2 + AcidoUrico + Edad",
+                  "HDL bajo + ResistenciaInsulina + PCR + Jóvenes",
+                  "Anemia + Deficiencias vitamínicas + PCR",
+                  "Alteraciones metabólicas múltiples + Edad + Contaminantes",
+                  "Disfunción hepática + Vitaminas + Creatinina"),
+  Probabilidad = c(query_1, query_2, query_3, query_4, query_5, query_6, query_7)
+)
+
+print(resultados_dag3)
