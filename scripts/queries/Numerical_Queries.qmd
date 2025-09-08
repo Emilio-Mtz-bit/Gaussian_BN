@@ -9,12 +9,18 @@ editor: source
 # Preparacion de la DAG
 
 ```{r}
+set.seed(1234)
+```
+
+
+
+```{r}
 library(tidyverse)
 ```
 
 
 ```{r}
-data = read.csv("data/Final_Data_Dag's.csv")
+data = read.csv("../../data/Final_Data_Dag's.csv")
 
 #Quitamos aquellas variables que por el momento no ocupamos
 
@@ -131,7 +137,7 @@ arc_set = matrix(c("Edad", "PCR",
                    "PCR", "Hemoglobina",
                    "SO2","Hemoglobina",
                    "COV","HbA1c",
-                   "COV", "Glucos",
+                   "COV", "Glucosa",
                    "COV", "Insulina"
                    ), byrow = TRUE, ncol = 2,
                  dimnames = list(NULL, c("from", "to")))
