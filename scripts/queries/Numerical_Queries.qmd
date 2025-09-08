@@ -1,0 +1,203 @@
+---
+title: "Query 1"
+format: html
+editor: source
+---
+
+# Descripcion de la Query
+
+# Preparacion de la DAG
+
+```{r}
+library(tidyverse)
+```
+
+
+```{r}
+data = read.csv("data/Final_Data_Dag's.csv")
+
+#Quitamos aquellas variables que por el momento no ocupamos
+
+data = data|>select(-desc_mun1)
+data = data|>select(-FOLIO_INT)
+data = data|>select(-sc)
+data = data|>select(-sv)
+data = data|>select(-sh)
+data = data|>select(-sm)
+data = data|>select(-int_hemoglobina)
+data = data|>select(-h0302)
+data = data|>select(-h0402)
+data = data|>select(-entidad1)
+data = data|>select(-desc_ent1)
+data = data|>select(-municipio1)
+data = data|>select(-estrato)
+data = data|>select(-NH_3)
+
+
+# Cambiamos las varibles que tienen int a double para hacerlas continuas
+data <- data |>
+  mutate(across(where(is.integer), as.double))
+
+data
+
+```
+
+```{r}
+data = na.omit(data)
+```
+
+
+
+Introducimos la DAG propuesta, que ya fue anteriormente evaluada
+
+
+```{r}
+library(bnlearn)
+library(tidyverse)
+```
+
+```{r}
+data_clean <- data %>%
+  select(
+    PM_2_5, NOx, SO_2, h0303, hb02,
+    valor_PCR, valor_AC_URICO, valor_GLU_SUERO, valor_INSULINA,
+    valor_HB1AC, valor_TRIG, valor_COL_HDL, 
+    valor_COL_LDL, valor_COLEST, valor_CREAT, valor_ALBU,
+    valor_FERRITINA, valor_VIT_D, CO, PM_010, COV
+  ) %>%
+  rename(
+    NO2 = NOx,
+    PM25 = PM_2_5,
+    PM10 = PM_010,
+    SO2 = SO_2,
+    Edad = h0303,
+    Hemoglobina = hb02,
+    PCR = valor_PCR,
+    AcidoUrico = valor_AC_URICO,
+    Glucosa = valor_GLU_SUERO,
+    Insulina = valor_INSULINA,
+    HbA1c = valor_HB1AC,
+    Trigliceridos = valor_TRIG,
+    ColesterolHDL = valor_COL_HDL,
+    ColesterolLDL = valor_COL_LDL,
+    ColesterolTotal = valor_COLEST,
+    Creatinina = valor_CREAT,
+    Albumina = valor_ALBU,
+    Ferritina = valor_FERRITINA,
+    VitaminaD = valor_VIT_D
+  )
+```
+
+```{r}
+data_clean
+```
+
+
+```{r}
+dag = empty.graph(nodes = c("Hemoglobina", "AcidoUrico", "Albumina", "ColesterolHDL", "ColesterolLDL", "ColesterolTotal", "Creatinina", "Glucosa", "Insulina", "PCR", "Trigliceridos", "HbA1c", "Ferritina", "VitaminaD", "Edad", "SO2", "CO", "NO2", "PM10", "PM25", "COV"))
+
+```
+
+```{r}
+arc_set = matrix(c("Edad", "PCR",
+                   "Edad", "Glucosa",
+                   "Edad", "ColesterolTotal",
+                   "Edad", "Trigliceridos",
+                   "PM25", "PCR",            
+                   "PM10", "PCR",
+                   "NO2", "Glucosa",        
+                   "NO2", "Insulina",       
+                   "PCR", "Glucosa",        
+                   "PCR", "Insulina",       
+                   "PCR", "Trigliceridos",  
+                   "PCR", "ColesterolHDL",  
+                   "PCR", "Ferritina",      
+                   "PM25", "Trigliceridos",  
+                   "NO2", "Trigliceridos",  
+                   "PM25", "ColesterolLDL",  
+                   "Glucosa", "HbA1c",          
+                   "Glucosa", "Trigliceridos",  
+                   "Insulina", "Trigliceridos",  
+                   "ColesterolHDL", "ColesterolTotal",
+                   "ColesterolLDL", "ColesterolTotal",
+                   "PM25", "Creatinina",     
+                   "NO2", "Creatinina",     
+                   "PM25", "AcidoUrico",     
+                   "Creatinina", "Albumina",       
+                   "CO", "Hemoglobina",    
+                   "Albumina", "VitaminaD",      
+                   "VitaminaD", "Glucosa",        
+                   "VitaminaD", "ColesterolTotal",
+                   "PCR", "Hemoglobina",
+                   "SO2","Hemoglobina",
+                   "COV","HbA1c",
+                   "COV", "Glucos",
+                   "COV", "Insulina"
+                   ), byrow = TRUE, ncol = 2,
+                 dimnames = list(NULL, c("from", "to")))
+arc_set
+```
+
+```{r}
+arcs(dag) = arc_set
+```
+
+```{r}
+length(nodes(dag))
+length(colnames(data_clean))
+
+setdiff(nodes(dag), colnames(data_clean))
+setdiff(colnames(data_clean), nodes(dag))
+```
+
+
+```{r}
+ag_g = bn.fit(dag, data = data_clean)
+```
+
+```{r}
+graphviz.plot(dag, shape = "ellipse")
+```
+```{r}
+dag_fitted <- bn.fit(dag, data = data_clean)
+```
+
+# Query 1
+
+```{r}
+cpquery(dag_fitted, event = (HbA1c > 5.7), evidence = (Glucosa > 100) & (PM25 > 30) & (Edad >50),n=10^6)
+
+```
+
+# Query 2
+
+```{r}
+cpquery(dag_fitted,
+        event = (Trigliceridos > 150) & (ColesterolHDL < 40),
+        evidence = (NO2 > 40) & (PM10 > 50),
+        n = 10^6)
+```
+
+#Query 3
+```{r}
+cpquery(dag_fitted,
+        event = (Glucosa > 100) & (HbA1c > 5.7),
+        evidence = (PM25 > 25) & (COV > 0.5),
+        n = 10^6)
+```
+
+#Query 4
+```{r}
+cpquery(dag_fitted,
+        event = (Creatinina > 1.1),
+        evidence = (Edad > 30 & Edad < 60) & (NO2 > 40) & (AcidoUrico > 6.0),
+        n = 10^6)
+
+
+```
+
+
+
+
+
+
