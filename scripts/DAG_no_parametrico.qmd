@@ -1,0 +1,158 @@
+---
+title: "DAG_no_parametrico"
+author: "Diego Aréchiga"
+format: html
+editor: source
+---
+
+```{r}
+library(bnlearn)
+library(tidyverse)
+```
+
+```{r}
+data1 = read.csv("Final_Data_Dag's.csv", stringsAsFactors = TRUE)
+head(data1)
+```
+
+```{r}
+colnames(data1) = c("desc_mun1", "FOLIO_INT", "sc", "sv", "sh", "sm", "int_hemoglobina", "Hemoglobina", "AcidoUrico", "Albumina", "ColesterolHDL", "ColesterolLDL", "ColesterolTotal", "Creatinina", "Glucosa", "Insulina", "PCR", "Trigliceridos", "valor_EAG", "HbA1c", "Ferritina", "valor_FOL", "valor_HCST", "valor_PROTCREAC", "valor_STFR_FEB23", "valor_VIT_B12", "VitaminaD", "Sexo", "Edad", "entidad1", "desc_ent1", "municipio1", "pond_f", "estrato", "S02", "CO", "NO2", "COV", "PM10", "PM25", "NH_3")
+```
+
+```{r}
+data1 <- data1[ , !(names(data1) %in% c(
+  "desc_mun1", "FOLIO_INT", "sc", "sh", "sm", "int_hemoglobina",
+  "valor_EAG", "valor_FOL", "valor_HCST", "valor_PROTCREAC",
+  "valor_STFR_FEB23", "entidad1", "desc_ent1", "municipio1",
+  "pond_f", "estrato", "COV", "NH_3", "sv", "valor_VIT_B12", "Sexo"
+))]
+```
+
+```{r}
+data1$Hemoglobina = as.numeric(data1$Hemoglobina)
+data1$ColesterolHDL = as.numeric(data1$ColesterolHDL)
+data1$ColesterolTotal = as.numeric(data1$ColesterolTotal)
+data1$Trigliceridos = as.numeric(data1$Trigliceridos)
+data1$Edad = as.numeric(data1$Edad)
+data1$S02 = as.numeric(data1$S02)
+```
+
+```{r}
+dim(data1)
+```
+
+```{r}
+head(data1)
+```
+
+```{r}
+colnames(data1)
+```
+
+```{r}
+dag = empty.graph(nodes = c("Hemoglobina", "AcidoUrico", "Albumina", "ColesterolHDL", "ColesterolLDL", "ColesterolTotal", "Creatinina", "Glucosa", "Insulina", "PCR", "Trigliceridos", "HbA1c", "Ferritina", "VitaminaD", "Edad", "S02", "CO", "NO2", "PM10", "PM25"))
+```
+
+```{r}
+arc_set = matrix(c("Edad", "PCR",
+                   "Edad", "Glucosa",
+                   "Edad", "ColesterolTotal",
+                   "Edad", "Trigliceridos",
+                   "PM25", "PCR",            
+                   "PM10", "PCR",
+                   "NO2", "Glucosa",        
+                   "NO2", "Insulina",       
+                   "PCR", "Glucosa",        
+                   "PCR", "Insulina",       
+                   "PCR", "Trigliceridos",  
+                   "PCR", "ColesterolHDL",  
+                   "PCR", "Ferritina",      
+                   "PM25", "Trigliceridos",  
+                   "NO2", "Trigliceridos",  
+                   "PM25", "ColesterolLDL",  
+                   "Glucosa", "HbA1c",          
+                   "Glucosa", "Trigliceridos",  
+                   "Insulina", "Trigliceridos",  
+                   "ColesterolHDL", "ColesterolTotal",
+                   "ColesterolLDL", "ColesterolTotal",
+                   "PM25", "Creatinina",     
+                   "NO2", "Creatinina",     
+                   "PM25", "AcidoUrico",     
+                   "Creatinina", "Albumina",       
+                   "CO", "Hemoglobina",    
+                   "Albumina", "VitaminaD",      
+                   "VitaminaD", "Glucosa",        
+                   "VitaminaD", "ColesterolTotal"), byrow = TRUE, ncol = 2,
+                 dimnames = list(NULL, c("from", "to")))
+arc_set
+```
+
+```{r}
+arcs(dag) = arc_set
+```
+
+```{r}
+dag
+```
+
+```{r}
+X_imp <- data1
+for (v in names(X_imp)) {
+  m <- median(X_imp[[v]], na.rm = TRUE)
+  X_imp[[v]][is.na(X_imp[[v]])] <- m      
+}
+score(dag, data = X_imp, type = "bic-g")
+```
+
+```{r}
+score(dag, data = X_imp, type = "aic-g")
+```
+```{r}
+library(mgcv)
+library(gratia)
+```
+
+```{r}
+mod_gam_H = gam(Hemoglobina ~ s(CO), data = X_imp, method = "REML")
+mod_gam_AU = gam(AcidoUrico ~ s(PM25), data = X_imp, method = "REML")
+mod_gam_CLDL = gam(ColesterolLDL ~ s(PM25), data = X_imp, method = "REML")
+mod_gam_C = gam(Creatinina ~ s(NO2) + s(PM25), data = X_imp, method = "REML")
+mod_gam_PCR = gam(PCR ~ s(Edad) + (PM10) + s (PM25), data = X_imp, method = "REML")
+mod_gam_A = gam(Albumina ~ s(Creatinina), data = X_imp, method = "REML")
+mod_gam_I = gam(Insulina ~ s(PCR) + s(NO2), data = X_imp, method = "REML")
+mod_gam_F = gam(Ferritina ~ s(PCR), data = X_imp, method = "REML")
+mod_gam_VD = gam(VitaminaD ~ (Albumina), data = X_imp, method = "REML")
+mod_gam_ALB = gam(Albumina ~ s (Creatinina), data = X_imp, method = "REML")
+mod_gam_CT = gam(ColesterolTotal ~ s(ColesterolLDL) + (ColesterolHDL) + (VitaminaD) + s(Edad), data = X_imp, method =
+"REML")
+mod_gam_G = gam(Glucosa ~ s(PCR) + s(VitaminaD) + s(Edad) + s(NO2), data = X_imp, method = "REML")
+mod_gam_T = gam(Trigliceridos ~ s(Glucosa) + s(Insulina) + s(PCR) + s(Edad) + s(NO2) + s(PM25), data = X_imp, method = "REML")
+mod_gam_HBA = gam(HbA1c ~ s(Glucosa), data = X_imp, method = "REML")
+```
+
+```{r}
+mod_E = lm(Edad ~ 1, data = X_imp)
+mod_S02 = lm(S02 ~ 1, data = X_imp)
+mod_CO = lm(CO ~ 1, data = X_imp)
+mod_NO2 = lm(NO2 ~ 1, data = X_imp)
+mod_PM10 = lm(PM10 ~ 1, data = X_imp)
+mod_PM25 = lm(PM25 ~ 1, data = X_imp)
+```
+
+```{r}
+-1/2*(BIC(mod_gam_H) + BIC(mod_gam_AU) + BIC(mod_gam_CLDL) + BIC(mod_gam_C) + BIC(mod_gam_PCR) + BIC(mod_gam_A) + BIC
+(mod_gam_I) + BIC(mod_gam_F) + BIC(mod_gam_VD) + BIC(mod_gam_ALB) + BIC(mod_gam_CT) + BIC(mod_gam_G) + BIC(mod_gam_T) + BIC
+(mod_gam_HBA) + BIC(mod_E) + BIC(mod_S02) + BIC(mod_CO) + BIC(mod_NO2) + BIC(mod_PM10) + BIC(mod_PM25))
+```
+
+```{r}
+-1/2 * (
+  AIC(mod_gam_H) + AIC(mod_gam_AU) + AIC(mod_gam_CLDL) + AIC(mod_gam_C) +
+  AIC(mod_gam_PCR) + AIC(mod_gam_A) + AIC(mod_gam_I) + AIC(mod_gam_F) +
+  AIC(mod_gam_VD) + AIC(mod_gam_ALB) + AIC(mod_gam_CT) + AIC(mod_gam_G) +
+  AIC(mod_gam_T) + AIC(mod_gam_HBA) +
+  AIC(mod_E) + AIC(mod_S02) + AIC(mod_CO) + AIC(mod_NO2) +
+  AIC(mod_PM10) + AIC(mod_PM25)
+)
+```
+
