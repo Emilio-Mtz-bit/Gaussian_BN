@@ -1,0 +1,218 @@
+---
+title: "DAG 1 Proposal: Direct Pollutant Effects"
+author: "Andrés Martínez"
+format: html
+editor: visual
+---
+
+# Propuesta DAG 1: Efectos Directos de Contaminantes
+
+Esta primera propuesta se enfoca en las relaciones causales directas entre contaminantes del aire y biomarcadores, con PCR como mediador central de la inflamación sistémica.
+
+```{r}
+library(bnlearn)
+library(tidyverse)
+```
+
+```{r}
+muestras <- read.csv("data/ensanut2022_muestras.csv", sep = ";")
+calidad_aire <- read.csv("data/calidad_aire_2025.csv")
+```
+
+```{r}
+dag1_nodes <- c("PM25", "PM10", "NO2", "SO2", "CO","Edad", "Sexo","PCR","Glucosa", "Insulina", "HbA1c", "Trigliceridos", "ColesterolHDL", "ColesterolLDL", "ColesterolTotal", "Creatinina", "AcidoUrico", "Albumina","Hemoglobina", "Ferritina","VitaminaD")
+```
+
+```{r}
+dag1 <- empty.graph(nodes = dag1_nodes)
+```
+
+# 
+
+```{r}
+arc_set1 <- matrix(c(
+  # VÍAS DE CONFUSIÓN DEMOGRÁFICA
+  "Edad", "PCR",
+  "Edad", "Glucosa", 
+  "Edad", "ColesterolTotal",
+  "Edad", "Trigliceridos",
+  "Sexo", "ColesterolHDL",
+  "Sexo", "Trigliceridos",
+  "Sexo", "PCR",
+  
+  # VÍA PRINCIPAL: CONTAMINANTES → PCR (INFLAMACIÓN)
+  "PM25", "PCR",
+  "PM10", "PCR", 
+  "NO2", "PCR",
+  "SO2", "PCR",
+  
+  # EFECTOS DIRECTOS: CONTAMINANTES → METABOLISMO GLUCOSA (evidencia fuerte)
+  "PM25", "Glucosa",
+  "PM10", "Glucosa",
+  "NO2", "Glucosa",
+  "NO2", "Insulina",
+  
+  # EFECTOS MEDIADOS: PCR → BIOMARCADORES
+  "PCR", "Glucosa",
+  "PCR", "Insulina", 
+  "PCR", "Trigliceridos",
+  "PCR", "ColesterolHDL",
+  "PCR", "Ferritina",
+  
+  # EFECTOS DIRECTOS: CONTAMINANTES → LÍPIDOS
+  "PM25", "Trigliceridos",
+  "NO2", "Trigliceridos",
+  "PM25", "ColesterolLDL",
+  
+  # INTERACCIONES METABÓLICAS
+  "Glucosa", "HbA1c",
+  "Glucosa", "Trigliceridos",
+  "Insulina", "Trigliceridos",
+  
+  # COMPOSICIÓN LIPÍDICA
+  "ColesterolHDL", "ColesterolTotal",
+  "ColesterolLDL", "ColesterolTotal",
+  
+  # FUNCIÓN RENAL
+  "PM25", "Creatinina",
+  "NO2", "Creatinina",
+  "PM25", "AcidoUrico",
+  "Creatinina", "Albumina",
+  
+  # EFECTOS EN HEMATOLOGÍA
+  "CO", "Hemoglobina",
+  
+  # MICRONUTRIENTES
+  "Albumina", "VitaminaD",
+  "VitaminaD", "Glucosa",
+  "VitaminaD", "ColesterolTotal"
+  
+), byrow = TRUE, ncol = 2, dimnames = list(NULL, c("from", "to")))
+```
+
+```{r}
+arcs(dag1) <- arc_set1
+```
+
+```{r}
+print(dag1)
+plot(dag1, main = "DAG 1: Efectos Directos de Contaminantes")
+```
+
+## Verificar estructura
+
+```{r}
+print(paste(acyclic(dag1)))
+```
+
+```{r}
+print(paste(narcs(dag1)))
+```
+
+```{r}
+print(arcs(dag1))
+```
+
+# Métricas
+
+```{r}
+data1 = read.csv("final_data_dag's.csv", stringsAsFactors = TRUE)
+head(data1)
+```
+
+```{r}
+colnames(data1) = c("desc_mun1", "FOLIO_INT", "sc", "sv", "sh", "sm", "int_hemoglobina", "Hemoglobina", "AcidoUrico", "Albumina", "ColesterolHDL", "ColesterolLDL", "ColesterolTotal", "Creatinina", "Glucosa", "Insulina", "PCR", "Trigliceridos", "valor_EAG", "HbA1c", "Ferritina", "valor_FOL", "valor_HCST", "valor_PROTCREAC", "valor_STFR_FEB23", "valor_VIT_B12", "VitaminaD", "Sexo", "Edad", "entidad1", "desc_ent1", "municipio1", "pond_f", "estrato", "S02", "CO", "NO2", "COV", "PM10", "PM25", "NH_3")
+```
+
+```{r}
+data1 <- data1[ , !(names(data1) %in% c(
+  "desc_mun1", "FOLIO_INT", "sc", "sh", "sm", "int_hemoglobina",
+  "valor_EAG", "valor_FOL", "valor_HCST", "valor_PROTCREAC",
+  "valor_STFR_FEB23", "entidad1", "desc_ent1", "municipio1",
+  "pond_f", "estrato", "COV", "NH_3", "sv", "valor_VIT_B12", "Sexo"
+))]
+```
+
+```{r}
+data1$Hemoglobina = as.numeric(data1$Hemoglobina)
+data1$ColesterolHDL = as.numeric(data1$ColesterolHDL)
+data1$ColesterolTotal = as.numeric(data1$ColesterolTotal)
+data1$Trigliceridos = as.numeric(data1$Trigliceridos)
+data1$Edad = as.numeric(data1$Edad)
+```
+
+```{r}
+dim(data1)
+```
+
+```{r}
+head(data1)
+```
+
+```{r}
+colnames(data1)
+
+```
+
+```{r}
+dag = empty.graph(nodes = c("Hemoglobina", "AcidoUrico", "Albumina", "ColesterolHDL", "ColesterolLDL", "ColesterolTotal", "Creatinina", "Glucosa", "Insulina", "PCR", "Trigliceridos", "HbA1c", "Ferritina", "VitaminaD", "Edad", "S02", "CO", "NO2", "PM10", "PM25"))
+
+```
+
+```{r}
+arc_set = matrix(c("Edad", "PCR",
+                   "Edad", "Glucosa",
+                   "Edad", "ColesterolTotal",
+                   "Edad", "Trigliceridos",
+                   "PM25", "PCR",            
+                   "PM10", "PCR",
+                   "NO2", "Glucosa",        
+                   "NO2", "Insulina",       
+                   "PCR", "Glucosa",        
+                   "PCR", "Insulina",       
+                   "PCR", "Trigliceridos",  
+                   "PCR", "ColesterolHDL",  
+                   "PCR", "Ferritina",      
+                   "PM25", "Trigliceridos",  
+                   "NO2", "Trigliceridos",  
+                   "PM25", "ColesterolLDL",  
+                   "Glucosa", "HbA1c",          
+                   "Glucosa", "Trigliceridos",  
+                   "Insulina", "Trigliceridos",  
+                   "ColesterolHDL", "ColesterolTotal",
+                   "ColesterolLDL", "ColesterolTotal",
+                   "PM25", "Creatinina",     
+                   "NO2", "Creatinina",     
+                   "PM25", "AcidoUrico",     
+                   "Creatinina", "Albumina",       
+                   "CO", "Hemoglobina",    
+                   "Albumina", "VitaminaD",      
+                   "VitaminaD", "Glucosa",        
+                   "VitaminaD", "ColesterolTotal"), byrow = TRUE, ncol = 2,
+                 dimnames = list(NULL, c("from", "to")))
+arc_set
+```
+
+```{r}
+arcs(dag) = arc_set
+```
+
+```{r}
+dag
+```
+
+```{r}
+dag_g = bn.fit(dag, data = data1)
+```
+
+```{r}
+X_imp <- data1
+for (v in names(X_imp)) {
+  m <- median(X_imp[[v]], na.rm = TRUE)
+  X_imp[[v]][is.na(X_imp[[v]])] <- m        # imputación por mediana (rápida)
+}
+score(dag, data = X_imp, type = "bic-g")
+```
+```{r}
+score(dag, data = X_imp, type = "aic-g")
+```
